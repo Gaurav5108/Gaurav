@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elegant Search Results by copilot</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #c3ecf7, #f9d5ec);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .search-container {
+      margin-bottom: 30px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    input[type="text"] {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: none;
+      width: 300px;
+      font-size: 1em;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #004d40;
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+    }
+
+    .card h2 {
+      font-size: 1.2em;
+      color: #00796b;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 0.95em;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .card a {
+      display: inline-block;
+      padding: 10px 18px;
+      background-color: #00796b;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .card a:hover {
+      background-color: #004d40;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="search-container">
+    <input type="text" id="queryId" placeholder="Search something beautiful..."/>
+    <button id="btnLoad">Search</button>
+  </div>
+
+  <div class="results" id="resultsContainer"></div>
+
+  <script>
+    document.getElementById('btnLoad').addEventListener('click', () => {
+      const queryData = document.getElementById('queryId').value.trim();
+      if (!queryData) {
+        alert("Please enter a search query.");
+        return;
+      }
+
+      const url = "https://www.googleapis.com/customsearch/v1?key=AIzaSyDls9OpON6MzeRWVc3Wzup_5CvhufFC_d8&cx=f323261a62b404144&q=" + encodeURIComponent(queryData) + "&num=5";
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const items = data.items;
+          const container = document.getElementById('resultsContainer');
+          container.innerHTML = ""; // Clear previous results
+
+          if (items && items.length > 0) {
+            items.forEach(item => {
+              const card = document.createElement('div');
+              card.className = 'card';
+              card.innerHTML = `
+                <h2>${item.title}</h2>
+                <p>${item.snippet}</p>
+                <a href="${item.link}" target="_blank">Visit Website</a>
+              `;
+              container.appendChild(card);
+            });
+          } else {
+            container.innerHTML = "<p>No results found.</p>";
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+          alert("Something went wrong. Please try again.");
+        });
+    });
+  </script>
+
+</body>
+</html>
